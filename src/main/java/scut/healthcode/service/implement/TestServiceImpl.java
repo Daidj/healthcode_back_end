@@ -1,5 +1,6 @@
 package scut.healthcode.service.implement;
 import org.springframework.stereotype.Service;
+import scut.healthcode.blockchain.client.HealthcodeClient;
 import scut.healthcode.service.TestService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -12,6 +13,12 @@ public class TestServiceImpl implements TestService {
     @Override
     public String getStr(String input) {
         logger.info(input);
+        try {
+            HealthcodeClient healthcodeClient = HealthcodeClient.getHealthcodeClient();
+            return healthcodeClient.isHealthSelect("1111");
+        } catch (Exception e){
+            e.printStackTrace();
+        }
         return "wahaha";
     }
 }
