@@ -4,12 +4,14 @@ import java.io.*;
 import java.math.BigInteger;
 import java.text.SimpleDateFormat;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.Properties;
 
 import com.google.gson.JsonObject;
 import org.fisco.bcos.sdk.BcosSDK;
 import org.fisco.bcos.sdk.abi.datatypes.generated.tuples.generated.Tuple1;
 import org.fisco.bcos.sdk.abi.datatypes.generated.tuples.generated.Tuple2;
+import org.fisco.bcos.sdk.crypto.hash.Hash;
 import org.fisco.bcos.sdk.crypto.keypair.CryptoKeyPair;
 import org.fisco.bcos.sdk.model.TransactionReceipt;
 import org.slf4j.Logger;
@@ -21,8 +23,10 @@ import org.springframework.core.io.Resource;
 import scut.healthcode.blockchain.contract.Healthcode;
 import scut.healthcode.blockchain.contract.Hospital;
 import scut.healthcode.blockchain.contract.User;
+import scut.healthcode.blockchain.contract.Util;
 import scut.healthcode.entity.NucleicAcidInfo;
 import scut.healthcode.entity.UserInfo;
+import scut.healthcode.util.RetMessageFactory;
 
 public class HealthcodeClient {
     private static final Logger logger = LoggerFactory.getLogger(HealthcodeClient.class);
@@ -34,6 +38,7 @@ public class HealthcodeClient {
 
     public static final String HOSPITAL_ADDRESS = "HospitalAddress";
     public static final String USER_ADDRESS = "UserAddress";
+    public static final String UTIL_ADDRESS = "UtilAddress";
 //    public static final String HEALTHCODE_ADDRESS = "HealthcodeAddress";
 
     //单例模式
@@ -89,6 +94,9 @@ public class HealthcodeClient {
 //                        break;
                     case USER_ADDRESS:
                         recordAddr(USER_ADDRESS, User.deploy(client, cryptoKeyPair).getContractAddress());
+                        break;
+                    case UTIL_ADDRESS:
+                        recordAddr(UTIL_ADDRESS, Util.deploy(client, cryptoKeyPair).getContractAddress());
                         break;
                     default: {
                         logger.info("no this contract");
@@ -273,4 +281,15 @@ public class HealthcodeClient {
 //        return "hospitalUpload failed.";
     }
 
+    ///////////////////////////////////////查询//////////////////////////////////////////
+    public HashMap<String, Object> query(String table_name, String primary_key) throws Exception {
+        String contractAddress = loadAssetAddr(UTIL_ADDRESS);
+        Util util = Util.load(contractAddress, client, cryptoKeyPair);
+        TransactionReceipt receipt = util.query(table_name, primary_key);
+        Tuple2<BigInteger, String> result = util.getQueryOutput(receipt);
+        int ret_code = result.getValue1().intValue();
+        HashMap<String, Object> ret = RetMessageFactory.newReturnMessage(ret_code);
+        ret.put("entry", result.getValue2());
+        return ret;
+    }
 }

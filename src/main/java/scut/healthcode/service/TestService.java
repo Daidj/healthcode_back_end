@@ -3,6 +3,8 @@ package scut.healthcode.service;
 
 import org.springframework.stereotype.Service;
 
+import java.util.HashMap;
+
 @Service
 public interface TestService {
 
@@ -13,4 +15,7 @@ public interface TestService {
      * @author
      */
     public String getStr(String input);
+
+    public HashMap<String, Object> query(String table_name, String primary_key) throws Exception;
+//    public String getAccount(String input) throws Exception;
 }

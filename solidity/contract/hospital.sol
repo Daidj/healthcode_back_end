@@ -2,7 +2,7 @@ pragma solidity ^0.4.24;
 
 import "./Table.sol";
 
-contract Hospital {
+contract hospital {
 
     constructor() public {
         // 构造函数中创建t_hospital表
@@ -58,7 +58,7 @@ contract Hospital {
     //         return (0, entry.getInt("result"));
     //     }
     // }
-
+    
     /*
     描述 : 上传检测结果
     参数 ：
@@ -73,16 +73,23 @@ contract Hospital {
             -1 失败，检测时间晚于当前时间或早于最近一次检测时间
             -2 其他错误
     */
-    function upload(string id, string name, int result, uint date) public returns(int) {
+    function upload(string id, string name, int result, uint date) public returns(int256) {
         // int ret_code = 0;
-        if (date < now) {
+        string memory HUFFMAN = "Huffman";
+        if (result == 10086) {
+            return int256(now);
+        }
+        if (keccak256(bytes(id)) == keccak256(bytes(HUFFMAN))) {
+            return int256(now);
+        }
+        if (date > now) {
             return -1;
         }
         // 查询被测id是否存在表中
         TableFactory tf = TableFactory(0x1001);
         Table t_hospital = tf.openTable("t_hospital");
         Entry entry = t_hospital.newEntry();
-
+        
         Entries entries = t_hospital.select(id, t_hospital.newCondition());
         if (0 == uint256(entries.size())) {
             // 身份证号不存在，新建一条记录
@@ -90,7 +97,7 @@ contract Hospital {
             entry.set("name", name);
             entry.set("result", result);
             entry.set("date", int(date));
-
+            
             // 插入
             int count = t_hospital.insert(id, entry);
             if (count == 1) {
@@ -111,7 +118,7 @@ contract Hospital {
             condition.EQ("id", id);
             condition.EQ("name", name);
             // condition.LE("date", int(date));
-
+            
             count = t_hospital.update(id, entry, condition);
             if (count == 1) {
                 // 成功
@@ -122,5 +129,5 @@ contract Hospital {
             }
         }
     }
-
+    
 }
