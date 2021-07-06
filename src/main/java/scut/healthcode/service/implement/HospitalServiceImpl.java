@@ -6,8 +6,10 @@ import org.springframework.stereotype.Service;
 import scut.healthcode.blockchain.client.HealthcodeClient;
 import scut.healthcode.entity.NucleicAcidInfo;
 import scut.healthcode.service.HospitalService;
+import scut.healthcode.util.RetMessageFactory;
 
 import java.math.BigInteger;
+import java.util.HashMap;
 
 @Service("hospitalService")
 public class HospitalServiceImpl implements HospitalService {
@@ -15,18 +17,18 @@ public class HospitalServiceImpl implements HospitalService {
     private static final Logger logger = LoggerFactory.getLogger(TestServiceImpl.class);
 
     @Override
-    public boolean upload(NucleicAcidInfo nucleicAcidInfo) {
+    public HashMap upload(NucleicAcidInfo nucleicAcidInfo) {
         try {
             HealthcodeClient healthcodeClient = HealthcodeClient.getHealthcodeClient();
             String output = healthcodeClient.hospitalUpload(nucleicAcidInfo);
             logger.info("hospitalUpload : " + output);
             if (output.matches("0x0000000000000000000000000000000000000000000000000000000000000000"))
-                return true;
+                return RetMessageFactory.newReturnMessage(1);
             else
-                return false;
+                return RetMessageFactory.newReturnMessage(2);
         } catch (Exception e){
             e.printStackTrace();
         }
-        return false;
+        return null;
     }
 }

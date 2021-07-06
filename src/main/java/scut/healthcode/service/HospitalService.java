@@ -3,6 +3,7 @@ package scut.healthcode.service;
 import org.springframework.stereotype.Service;
 import scut.healthcode.entity.NucleicAcidInfo;
 
+import java.util.HashMap;
 
 
 @Service
@@ -16,5 +17,5 @@ public interface HospitalService {
      * @return whether the information is inserted
      */
 
-    boolean upload(NucleicAcidInfo nucleicAcidInfo);
+    HashMap upload(NucleicAcidInfo nucleicAcidInfo);
 }

@@ -4,17 +4,16 @@ package scut.healthcode.controller;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 import scut.healthcode.entity.NucleicAcidInfo;
+import scut.healthcode.util.JSONHelper;
 import scut.healthcode.service.HospitalService;
-import scut.healthcode.service.TestService;
 import scut.healthcode.service.implement.TestServiceImpl;
 
+import java.util.HashMap;
 
 
-
+@CrossOrigin
 @RestController
 @RequestMapping("/hospital")
 public class HospitalController {
@@ -34,8 +33,15 @@ public class HospitalController {
      */
 
     @PostMapping("/upload")
-    public boolean upload(NucleicAcidInfo nucleicAcidInfo){
-        logger.info("accept nucleic Acid Info");
-        return hospitalService.upload(nucleicAcidInfo);
+    @ResponseBody
+    public HashMap upload(NucleicAcidInfo nucleicAcidInfo){
+        try {
+            logger.info("accept nucleic Acid Info");
+            
+            return hospitalService.upload(nucleicAcidInfo);
+        }catch (Exception e){
+            e.printStackTrace();
+        }
+        return null;
     }
 }
