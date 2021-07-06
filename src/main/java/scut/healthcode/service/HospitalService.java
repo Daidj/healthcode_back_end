@@ -17,5 +17,5 @@ public interface HospitalService {
      * @return whether the information is inserted
      */
 
-    HashMap upload(NucleicAcidInfo nucleicAcidInfo);
+    HashMap<String, Object> upload(NucleicAcidInfo nucleicAcidInfo);
 }

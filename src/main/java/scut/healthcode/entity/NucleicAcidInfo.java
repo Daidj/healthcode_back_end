@@ -4,8 +4,9 @@ import lombok.AllArgsConstructor;
 
 @AllArgsConstructor
 public class NucleicAcidInfo {
-    public String getID() {
-        return ID;
+
+    public String getId() {
+        return id;
     }
 
     public String getUserName() {
@@ -20,8 +21,8 @@ public class NucleicAcidInfo {
         return result;
     }
 
-    public void setID(String ID) {
-        this.ID = ID;
+    public void setID(String id) {
+        this.id = id;
     }
 
     public void setUserName(String userName) {
@@ -32,15 +33,22 @@ public class NucleicAcidInfo {
         this.time = time;
     }
 
-    public void setResult(int result) {
+    public void setResult(Integer result) {
         this.result = result;
     }
 
-    private String ID;
+    private String id;
     private String userName;
     private String time;
-    private int result;
+    private Integer result;
 
-
-
+    @Override
+    public String toString() {
+        return "NucleicAcidInfo{" +
+                "id='" + id + '\'' +
+                ", userName='" + userName + '\'' +
+                ", time='" + time + '\'' +
+                ", result=" + result +
+                '}';
+    }
 }
