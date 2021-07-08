@@ -20,11 +20,13 @@ import org.springframework.context.ApplicationContext;
 import org.springframework.context.support.ClassPathXmlApplicationContext;
 import org.springframework.core.io.ClassPathResource;
 import org.springframework.core.io.Resource;
+import scut.healthcode.blockchain.contract.Government;
 import scut.healthcode.blockchain.contract.Healthcode;
 import scut.healthcode.blockchain.contract.Hospital;
 import scut.healthcode.blockchain.contract.User;
 import scut.healthcode.blockchain.contract.Util;
 import scut.healthcode.entity.NucleicAcidInfo;
+import scut.healthcode.entity.RegionInfo;
 import scut.healthcode.entity.UserInfo;
 import scut.healthcode.util.RetMessageFactory;
 
@@ -39,6 +41,7 @@ public class HealthcodeClient {
     public static final String HOSPITAL_ADDRESS = "HospitalAddress";
     public static final String USER_ADDRESS = "UserAddress";
     public static final String UTIL_ADDRESS = "UtilAddress";
+    public static final String GOVERNMENT_ADDRESS = "GovernmentAddress";
 //    public static final String HEALTHCODE_ADDRESS = "HealthcodeAddress";
 
     //单例模式
@@ -97,6 +100,9 @@ public class HealthcodeClient {
                         break;
                     case UTIL_ADDRESS:
                         recordAddr(UTIL_ADDRESS, Util.deploy(client, cryptoKeyPair).getContractAddress());
+                        break;
+                    case GOVERNMENT_ADDRESS:
+                        recordAddr(GOVERNMENT_ADDRESS, Government.deploy(client, cryptoKeyPair).getContractAddress());
                         break;
                     default: {
                         logger.info("no this contract");
@@ -279,6 +285,46 @@ public class HealthcodeClient {
         return -100;
         
 //        return "hospitalUpload failed.";
+    }
+
+    ///////////////////////////////////////Government//////////////////////////////////////////
+    /**
+     * Send transaction to upload region info.
+     * @param regionInfo Region Info
+     * @return ret code
+     */
+
+    public int governmentUpload(RegionInfo regionInfo){
+        try{
+            deployAssetAndRecordAddr(GOVERNMENT_ADDRESS);
+            String contractAddress = loadAssetAddr(GOVERNMENT_ADDRESS);
+            Government government = Government.load(contractAddress, client, cryptoKeyPair);
+
+            SimpleDateFormat format = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+            Date date = format.parse(regionInfo.getDate().trim());
+            if(new Date().getTime() < date.getTime()){
+                System.out.println("Current time:" + new Date().getTime());
+                System.out.println("Upload time:" + date.getTime());
+                return -1;
+            }
+
+            if(regionInfo.getIsDangerous() < 0 || regionInfo.getIsDangerous() > 1){
+                return -3;
+            }
+
+            TransactionReceipt receipt = government.upload_region_info(
+                    regionInfo.getRegionName(),
+                    new BigInteger(String.valueOf(regionInfo.getIsDangerous())),
+                    new BigInteger(String.valueOf(date.getTime()/1000)));
+            Tuple1<BigInteger> result = government.getUpload_region_infoOutput(receipt);
+            return result.getValue1().intValue();
+
+        }catch (Exception e){
+            e.printStackTrace();
+        }
+        return -100;
+
+
     }
 
     ///////////////////////////////////////查询//////////////////////////////////////////

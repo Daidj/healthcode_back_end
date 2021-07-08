@@ -1,6 +1,6 @@
 package scut.healthcode.service.implement;
 import org.springframework.stereotype.Service;
-import scut.healthcode.blockchain.client.AssetClient;
+//import scut.healthcode.blockchain.client.AssetClient;
 import scut.healthcode.blockchain.client.HealthcodeClient;
 import scut.healthcode.service.TestService;
 import org.slf4j.Logger;
