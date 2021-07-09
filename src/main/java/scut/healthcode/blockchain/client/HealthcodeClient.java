@@ -163,32 +163,38 @@ public class HealthcodeClient {
     /**
      * 获取ID对应用户的健康状况，并返回健康哈希值
      * @param ID 身份证号
-     * @return 健康哈希值
+     * @return ret_code & 健康哈希值
      */
-    public String generateHealthcode(String ID) {
+    public HashMap<String, Object> generateHealthcode(String ID) {
+        HashMap<String, Object> ret = new HashMap<>();
         try {
             String contractAddress = loadAssetAddr(USER_ADDRESS);
             User user = User.load(contractAddress, client, cryptoKeyPair);
 
             TransactionReceipt receipt = user.generate(ID);
-            System.out.println("##########################################");
-            System.out.println(receipt.getOutput());
-            System.out.println(receipt.getOutput().getClass().getSimpleName());
-            System.out.println("##########################################");
-            return receipt.getOutput();
+            Tuple2<BigInteger, String> result = user.getGenerateOutput(receipt);
+//            System.out.println("##########################################");
+//            System.out.println(receipt.getOutput());
+//            System.out.println(receipt.getOutput().getClass().getSimpleName());
+//            System.out.println("##########################################");
+            int ret_code = result.getValue1().intValue();
+            String hashcode = result.getValue2();
+            ret.put("ret_code", ret_code);
+            ret.put("Hashcode", hashcode);
+            return ret;
         } catch (Exception e) {
             // TODO Auto-generated catch block
              e.printStackTrace();
         }
-        return "generate failed.";
+        return ret;
     }
 
     /**
      * 根据健康哈希值，返回用户是否健康
      * @param hashcode 健康哈希值
-     * @return 是否健康
+     * @return is_valid & is_health
      */
-    public boolean isHealth(String hashcode) {
+    public int[] isHealth(String hashcode) {
         try {
             String contractAddress = loadAssetAddr(USER_ADDRESS);
             User user = User.load(contractAddress, client, cryptoKeyPair);
@@ -196,49 +202,51 @@ public class HealthcodeClient {
             Tuple2<BigInteger, BigInteger> result = user.isHealthy(hashcode);
             int is_valid = result.getValue1().intValue();
             int is_health = result.getValue2().intValue();
-            switch (is_valid) {
-                case 0:
-                    logger.info("Valid HealthCode.");
-                    if (is_health == 0) {
-                        return true;
-                    } else if (is_health == -1) {
-                        logger.info("The health state of User is Unknown.");
-                    }
-                    break;
-                case 1:
-                    logger.info("HealthCode doesn't exist.");
-                    break;
-                case 2:
-                    logger.info("HealthCode out of date");
-                    break;
-                default:
-                    logger.info("Unexpected valid code with " + is_valid);
-            }
+            return new int[]{is_valid, is_health};
+//            switch (is_valid) {
+//                case 0:
+//                    logger.info("Valid HealthCode.");
+//                    if (is_health == 0) {
+//                        return 0;
+//                    } else if (is_health == -1) {
+//
+//                        logger.info("The health state of User is Unknown.");
+//                    }
+//                    break;
+//                case 1:
+//                    logger.info("HealthCode doesn't exist.");
+//                    break;
+//                case 2:
+//                    logger.info("HealthCode out of date");
+//                    break;
+//                default:
+//                    logger.info("Unexpected valid code with " + is_valid);
+//            }
 
         } catch (Exception e) {
             // TODO Auto-generated catch block
             e.printStackTrace();
             logger.info("health select failed.");
         }
-        return false;
+        return new int[]{-100, -100};
     }
 
     /**
      * 上传用户个人信息
      * @param userInfo 用户个人信息
      */
-    public String userUpload(UserInfo userInfo) {
+    public int userUpload(UserInfo userInfo) {
         try {
             String contractAddress = loadAssetAddr(USER_ADDRESS);
             User user = User.load(contractAddress, client, cryptoKeyPair);
 
             TransactionReceipt receipt = user.upload(userInfo.getID(), userInfo.getName(),
                     userInfo.getResidence());
-            return receipt.getOutput();
+            return user.getUploadOutput(receipt).getValue1().intValue();
         } catch (Exception e) {
             e.printStackTrace();
         }
-        return "hospitalUpload failed.";
+        return -100;
     }
 
 
