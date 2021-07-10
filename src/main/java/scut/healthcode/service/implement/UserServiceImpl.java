@@ -56,19 +56,18 @@ public class UserServiceImpl implements UserService {
                     }
                     break;
                 }
-                case 1:
+                case -1:
                     ret_info = "HashCode doesn't Exist.";break;
-                case 2:
+                case -2:
                     ret_info = "HashCode Expired"; break;
             }
 
-            ret.put("ret_code", ret_code);
+            ret.put("ret_code", ret_code[0]);
             ret.put("ret_info", ret_info);
-
         } catch (Exception e) {
             e.printStackTrace();
         }
-        return null;
+        return ret;
     }
 
     @Override

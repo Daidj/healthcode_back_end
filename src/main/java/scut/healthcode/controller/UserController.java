@@ -41,7 +41,7 @@ public class UserController {
     }
 
     @PostMapping("/checkIsHealthy")
-    public HashMap<String, Object> isHealth(@RequestBody String healthCode) {
-        return userService.isHealth(healthCode);
+    public HashMap<String, Object> isHealth(@RequestBody Map params) {
+        return userService.isHealth(params.get("healthCode").toString());
     }
 }
