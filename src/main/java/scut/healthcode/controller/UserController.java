@@ -7,6 +7,7 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.context.annotation.RequestScope;
 import scut.healthcode.entity.UserInfo;
 import scut.healthcode.service.UserService;
 
@@ -26,12 +27,12 @@ public class UserController {
     }
 
     @PostMapping("/generateHealthcode")
-    public HashMap<String, Object> generate(String ID) {
+    public HashMap<String, Object> generate(@RequestBody String ID) {
         return userService.generateHealthcode(ID);
     }
 
     @PostMapping("/checkIsHealthy")
-    public HashMap<String, Object> isHealth(String healthCode) {
+    public HashMap<String, Object> isHealth(@RequestBody String healthCode) {
         return userService.isHealth(healthCode);
     }
 }

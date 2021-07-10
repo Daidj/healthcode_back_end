@@ -77,9 +77,9 @@ public class UserServiceImpl implements UserService {
         try {
             HealthcodeClient healthcodeClient = HealthcodeClient.getHealthcodeClient();
             HashMap<String, Object> ret_code = healthcodeClient.generateHealthcode(ID);
-            int is_vaild = (int) ret_code.get(ret_code);
+            int is_vaild = (int) ret_code.get("ret_code");
             String ret_info = "";
-            switch ((int) ret_code.get(ret_code)) {
+            switch (is_vaild) {
                 case 1: ret_info = "Generate success."; break;
                 case 2: ret_info = "User does not exist."; break;
                 case 3: ret_info = "Unknown problem."; break;
