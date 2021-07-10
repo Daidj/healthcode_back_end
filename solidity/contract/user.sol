@@ -201,6 +201,8 @@ contract user{
         int isHealth = -1;
         if (pHealth == 0 && rHealth == 0) {
             isHealth = 0;
+        } else {
+            isHealth = 1;
         }
         return isHealth;
     }
@@ -218,7 +220,7 @@ contract user{
         uint charCount = 0 ;
         for(uint j = 0 ; j < x.length; j++){
             // byte char = x[j];
-            bytesString[j] = byte(uint256(x[j]) % 128);
+            bytesString[j] = byte(65 + uint256(x[j]) % 58);
             charCount++;
         }
         // bytes memory bytesStringTrimmed = new bytes(charCount);
