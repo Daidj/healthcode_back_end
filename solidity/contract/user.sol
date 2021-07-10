@@ -132,7 +132,19 @@ contract user{
             // if (pHealth == 0 && rHealth == 0) {
             //     isHealth = 0;
             // }
+            // return (1, "what happen?");
             int isHealth = getHealthInfo(id, user_entry.getString("residence"));
+            if (isHealth < -1) {
+                string memory error_info;
+                if (isHealth == -3) {
+                    error_info = "The hospital does not have the user’s nucleic acid test results.";
+                } else if (isHealth == -2) {
+                    error_info = "The government does not have safety information about the user’s place of residence.";
+                } else {
+                    error_info = "wtf??";
+                }
+                return (isHealth, error_info);
+            }
             // 根据选定字段生成健康哈希值
             health_code = sha256(
                 abi.encodePacked(
@@ -160,22 +172,29 @@ contract user{
         } else {
             // 用户不存在
             ret_code = 2;
+            return (int256(user_entries.size()), "az");
         }
 
         return (ret_code, bytes32ToString(health_code));
     }
 
     //
-    function getHealthInfo(string ID, string user_residence) private returns(int){
+    function getHealthInfo(string ID, string user_residence) private view returns(int){
         Table t_hospital = tf.openTable("t_hospital");
         Table t_government = tf.openTable("t_government");
 
         Entries hospital_entries = (t_hospital.select(ID, t_hospital.newCondition()));
         Entries government_entries = (t_government.select(user_residence, t_government.newCondition()));
-        require(hospital_entries.size() != 0,
-            "The hospital does not have the user’s nucleic acid test results.");
-        require(government_entries.size() != 0,
-            "The government does not have safety information about the user’s place of residence.");
+        // require(hospital_entries.size() != 0,
+        //     "The hospital does not have the user’s nucleic acid test results.");
+        // require(government_entries.size() != 0,
+        //     "The government does not have safety information about the user’s place of residence.");
+        if (hospital_entries.size() == 0) {
+            return -3;
+        }
+        if (government_entries.size() == 0) {
+            return -2;
+        }
         int pHealth = hospital_entries.get(0).getInt("result");
         int rHealth = government_entries.get(0).getInt("isDangerous");
         //int rHealth = 1;

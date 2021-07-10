@@ -76,17 +76,15 @@ public class UserServiceImpl implements UserService {
         HashMap<String, Object> ret = RetMessageFactory.newReturnMessage(-100);
         try {
             HealthcodeClient healthcodeClient = HealthcodeClient.getHealthcodeClient();
-            HashMap<String, Object> ret_code = healthcodeClient.generateHealthcode(ID);
-            int is_vaild = (int) ret_code.get("ret_code");
+            ret = healthcodeClient.generateHealthcode(ID);
+            int is_vaild = (int) ret.get("ret_code");
             String ret_info = "";
             switch (is_vaild) {
                 case 1: ret_info = "Generate success."; break;
                 case 2: ret_info = "User does not exist."; break;
                 case 3: ret_info = "Unknown problem."; break;
-                default: ret_info = "Unexpected ret_code with " + ret_code; break;
+                default: ret_info = "Unexpected ret_code with " + ret.get("ret_code"); break;
             }
-
-            ret.put("ret_code", ret_code);
             ret.put("ret_info", ret_info);
 
         } catch (Exception e) {

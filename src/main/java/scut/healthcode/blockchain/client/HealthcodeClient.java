@@ -7,11 +7,9 @@ import java.util.Date;
 import java.util.HashMap;
 import java.util.Properties;
 
-import com.google.gson.JsonObject;
 import org.fisco.bcos.sdk.BcosSDK;
 import org.fisco.bcos.sdk.abi.datatypes.generated.tuples.generated.Tuple1;
 import org.fisco.bcos.sdk.abi.datatypes.generated.tuples.generated.Tuple2;
-import org.fisco.bcos.sdk.crypto.hash.Hash;
 import org.fisco.bcos.sdk.crypto.keypair.CryptoKeyPair;
 import org.fisco.bcos.sdk.model.TransactionReceipt;
 import org.slf4j.Logger;
@@ -21,7 +19,6 @@ import org.springframework.context.support.ClassPathXmlApplicationContext;
 import org.springframework.core.io.ClassPathResource;
 import org.springframework.core.io.Resource;
 import scut.healthcode.blockchain.contract.Government;
-import scut.healthcode.blockchain.contract.Healthcode;
 import scut.healthcode.blockchain.contract.Hospital;
 import scut.healthcode.blockchain.contract.User;
 import scut.healthcode.blockchain.contract.Util;
@@ -52,7 +49,7 @@ public class HealthcodeClient {
             healthcodeClient = new HealthcodeClient();
             try {
                 healthcodeClient.initialize();
-                healthcodeClient.deployAssetAndRecordAddr(null);
+                healthcodeClient.deployAndRecordAddr(null);
             }catch (Exception e){
                 e.printStackTrace();
             }
@@ -80,11 +77,14 @@ public class HealthcodeClient {
      * 部署合约，并持久化记录该合约地址
      * @param contractName 合约名
      */
-    public void deployAssetAndRecordAddr(String contractName) {
+    public void deployAndRecordAddr(String contractName) {
         try {
             if (contractName == null){
                 logger.info("contract name is null");
-//                recordAddr(HOSPITAL_ADDRESS, Hospital.deploy(client, cryptoKeyPair).getContractAddress());
+                loadAssetAddr(HOSPITAL_ADDRESS);
+                loadAssetAddr(UTIL_ADDRESS);
+                loadAssetAddr(GOVERNMENT_ADDRESS);
+                loadAssetAddr(USER_ADDRESS);
 //                recordAddr(HEALTHCODE_ADDRESS, Healthcode.deploy(client, cryptoKeyPair).getContractAddress());
             } else {
 
@@ -92,9 +92,6 @@ public class HealthcodeClient {
                     case HOSPITAL_ADDRESS:
                         recordAddr(HOSPITAL_ADDRESS, Hospital.deploy(client, cryptoKeyPair).getContractAddress());
                         break;
-//                    case HEALTHCODE_ADDRESS:
-//                        recordAddr(HEALTHCODE_ADDRESS, Healthcode.deploy(client, cryptoKeyPair).getContractAddress());
-//                        break;
                     case USER_ADDRESS:
                         recordAddr(USER_ADDRESS, User.deploy(client, cryptoKeyPair).getContractAddress());
                         break;
@@ -148,7 +145,7 @@ public class HealthcodeClient {
 
         logger.info(" load " + contractName + "contract at " + contractAddress);
         if (contractAddress == null || contractAddress.trim().equals("")) {
-            deployAssetAndRecordAddr(contractName);
+            deployAndRecordAddr(contractName);
             contractResource = new ClassPathResource("contract.properties");
             prop.load(contractResource.getInputStream());
 
@@ -168,6 +165,7 @@ public class HealthcodeClient {
     public HashMap<String, Object> generateHealthcode(String ID) {
         HashMap<String, Object> ret = new HashMap<>();
         try {
+            deployAndRecordAddr(USER_ADDRESS);
             String contractAddress = loadAssetAddr(USER_ADDRESS);
             User user = User.load(contractAddress, client, cryptoKeyPair);
 
@@ -256,7 +254,7 @@ public class HealthcodeClient {
     public int hospitalUpload(NucleicAcidInfo nucleicAcidInfo) {
         try {
             // 重新部署一次合约，测试用，待删除
-            deployAssetAndRecordAddr(HOSPITAL_ADDRESS);
+//            deployAssetAndRecordAddr(HOSPITAL_ADDRESS);
             // FISCO BCOS 的now获取的并非unix时间戳，都不知道是什么东西, 智能合约无法正确处理
             // 在这里进行加工, FISCO BCOS也太垃圾了吧
             String contractAddress = loadAssetAddr(HOSPITAL_ADDRESS);
@@ -301,7 +299,7 @@ public class HealthcodeClient {
 
     public int governmentUpload(RegionInfo regionInfo){
         try{
-            deployAssetAndRecordAddr(GOVERNMENT_ADDRESS);
+            deployAndRecordAddr(GOVERNMENT_ADDRESS);
             String contractAddress = loadAssetAddr(GOVERNMENT_ADDRESS);
             Government government = Government.load(contractAddress, client, cryptoKeyPair);
 
