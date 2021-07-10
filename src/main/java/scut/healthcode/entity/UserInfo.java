@@ -4,16 +4,17 @@ import lombok.AllArgsConstructor;
 
 @AllArgsConstructor
 public class UserInfo {
-    private String ID;
+
+    private String id;
     private String name;
     private String residence;
 
-    public String getID() {
-        return ID;
+    public String getId() {
+        return id;
     }
 
-    public void setID(String ID) {
-        this.ID = ID;
+    public void setId(String id) {
+        this.id = id;
     }
 
     public String getName() {
@@ -30,5 +31,14 @@ public class UserInfo {
 
     public void setResidence(String residence) {
         this.residence = residence;
+    }
+
+    @Override
+    public String toString() {
+        return "UserInfo{" +
+                "id='" + id + '\'' +
+                ", name='" + name + '\'' +
+                ", residence='" + residence + '\'' +
+                '}';
     }
 }

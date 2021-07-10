@@ -12,6 +12,7 @@ import scut.healthcode.entity.UserInfo;
 import scut.healthcode.service.UserService;
 
 import java.util.HashMap;
+import java.util.Map;
 
 @RestController
 @RequestMapping("/user")
@@ -23,12 +24,20 @@ public class UserController {
 
     @PostMapping("/upload")
     public HashMap<String, Object> upload(@RequestBody UserInfo userInfo) {
-        return userService.upload(userInfo);
+        try {
+            logger.info("accept UserInfo");
+            logger.info(userInfo.toString());
+
+            return userService.upload(userInfo);
+        }catch (Exception e){
+            e.printStackTrace();
+        }
+        return null;
     }
 
     @PostMapping("/generateHealthcode")
-    public HashMap<String, Object> generate(@RequestBody String ID) {
-        return userService.generateHealthcode(ID);
+    public HashMap<String, Object> generate(@RequestBody Map params) {
+        return userService.generateHealthcode(params.get("id").toString());
     }
 
     @PostMapping("/checkIsHealthy")

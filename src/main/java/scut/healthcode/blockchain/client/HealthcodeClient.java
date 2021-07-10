@@ -173,10 +173,7 @@ public class HealthcodeClient {
 
             TransactionReceipt receipt = user.generate(ID);
             Tuple2<BigInteger, String> result = user.getGenerateOutput(receipt);
-//            System.out.println("##########################################");
-//            System.out.println(receipt.getOutput());
-//            System.out.println(receipt.getOutput().getClass().getSimpleName());
-//            System.out.println("##########################################");
+
             int ret_code = result.getValue1().intValue();
             String hashcode = result.getValue2();
             ret.put("ret_code", ret_code);
@@ -240,7 +237,7 @@ public class HealthcodeClient {
             String contractAddress = loadAssetAddr(USER_ADDRESS);
             User user = User.load(contractAddress, client, cryptoKeyPair);
 
-            TransactionReceipt receipt = user.upload(userInfo.getID(), userInfo.getName(),
+            TransactionReceipt receipt = user.upload(userInfo.getId(), userInfo.getName(),
                     userInfo.getResidence());
             return user.getUploadOutput(receipt).getValue1().intValue();
         } catch (Exception e) {
