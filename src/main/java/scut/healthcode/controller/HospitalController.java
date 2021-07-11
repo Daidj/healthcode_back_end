@@ -33,7 +33,7 @@ public class HospitalController {
     public HashMap<String, Object> upload(NucleicAcidInfo nucleicAcidInfo){
         try {
             logger.info("accept nucleic Acid Info");
-            logger.info(nucleicAcidInfo.toString()
+            logger.info(nucleicAcidInfo.toString());
 
             return hospitalService.upload(nucleicAcidInfo);
         }catch (Exception e){
