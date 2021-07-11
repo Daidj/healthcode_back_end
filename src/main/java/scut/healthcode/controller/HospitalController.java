@@ -30,7 +30,7 @@ public class HospitalController {
      */
 //    String ID, String userName, String time, int result
     @PostMapping("/upload")
-    public HashMap<String, Object> upload(NucleicAcidInfo nucleicAcidInfo){
+    public HashMap<String, Object> upload(@RequestBody NucleicAcidInfo nucleicAcidInfo){
         try {
             logger.info("accept nucleic Acid Info");
             logger.info(nucleicAcidInfo.toString());

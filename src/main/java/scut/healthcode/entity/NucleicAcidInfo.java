@@ -21,7 +21,7 @@ public class NucleicAcidInfo {
         return result;
     }
 
-    public void setID(String id) {
+    public void setId(String id) {
         this.id = id;
     }
 
